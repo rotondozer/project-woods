@@ -5148,7 +5148,7 @@ var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$init = function (flags) {
 	return _Utils_Tuple2(
-		{draft: '', messages: _List_Nil},
+		{draft: '', messages: _List_Nil, username: 'User'},
 		$elm$core$Platform$Cmd$none);
 };
 var $author$project$Main$Recv = function (a) {
@@ -5177,7 +5177,7 @@ var $author$project$Main$update = F2(
 						model,
 						{draft: ''}),
 					$author$project$Main$sendMessage(model.draft));
-			default:
+			case 'Recv':
 				var message = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -5189,13 +5189,47 @@ var $author$project$Main$update = F2(
 									[message]))
 						}),
 					$elm$core$Platform$Cmd$none);
+			default:
+				var username = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{username: username}),
+					$elm$core$Platform$Cmd$none);
 		}
 	});
 var $author$project$Main$DraftChanged = function (a) {
 	return {$: 'DraftChanged', a: a};
 };
 var $author$project$Main$Send = {$: 'Send'};
+var $author$project$Main$UserChanged = function (a) {
+	return {$: 'UserChanged', a: a};
+};
 var $elm$html$Html$button = _VirtualDom_node('button');
+var $elm$html$Html$li = _VirtualDom_node('li');
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $author$project$Main$toChatMessage = function (fromUser) {
+	return function (message) {
+		return A2(
+			$elm$html$Html$li,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$elm$html$Html$text(fromUser + (': ' + message))
+				]));
+	};
+};
+var $elm$html$Html$ul = _VirtualDom_node('ul');
+var $author$project$Main$chatMessagesWithUser = function (model) {
+	return A2(
+		$elm$html$Html$ul,
+		_List_Nil,
+		A2(
+			$elm$core$List$map,
+			$author$project$Main$toChatMessage(model.username),
+			model.messages));
+};
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$json$Json$Decode$andThen = _Json_andThen;
@@ -5210,7 +5244,6 @@ var $author$project$Main$ifIsEnter = function (msg) {
 		A2($elm$json$Json$Decode$field, 'key', $elm$json$Json$Decode$string));
 };
 var $elm$html$Html$input = _VirtualDom_node('input');
-var $elm$html$Html$li = _VirtualDom_node('li');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };
@@ -5267,10 +5300,7 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
-var $elm$html$Html$ul = _VirtualDom_node('ul');
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
 var $author$project$Main$view = function (model) {
 	return A2(
@@ -5285,21 +5315,7 @@ var $author$project$Main$view = function (model) {
 					[
 						$elm$html$Html$text('Echo Chat')
 					])),
-				A2(
-				$elm$html$Html$ul,
-				_List_Nil,
-				A2(
-					$elm$core$List$map,
-					function (msg) {
-						return A2(
-							$elm$html$Html$li,
-							_List_Nil,
-							_List_fromArray(
-								[
-									$elm$html$Html$text(msg)
-								]));
-					},
-					model.messages)),
+				$author$project$Main$chatMessagesWithUser(model),
 				A2(
 				$elm$html$Html$input,
 				_List_fromArray(
@@ -5312,6 +5328,16 @@ var $author$project$Main$view = function (model) {
 						'keydown',
 						$author$project$Main$ifIsEnter($author$project$Main$Send)),
 						$elm$html$Html$Attributes$value(model.draft)
+					]),
+				_List_Nil),
+				A2(
+				$elm$html$Html$input,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$type_('text'),
+						$elm$html$Html$Attributes$placeholder('Username'),
+						$elm$html$Html$Events$onInput($author$project$Main$UserChanged),
+						$elm$html$Html$Attributes$value(model.username)
 					]),
 				_List_Nil),
 				A2(

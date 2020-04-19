@@ -35,16 +35,19 @@ port messageReceiver : (String -> msg) -> Sub msg
 
 
 type alias Model =
-  { draft : String
+  { username : String
+  , draft : String
   , messages : List String
   }
 
 
 init : () -> ( Model, Cmd Msg )
 init flags =
-  ( { draft = "", messages = [] }
-  , Cmd.none
-  )
+  ( { username = "User" 
+    ,  draft = ""
+    , messages = [] 
+    }
+  , Cmd.none)
 
 
 
@@ -55,6 +58,7 @@ type Msg
   = DraftChanged String
   | Send
   | Recv String
+  | UserChanged String
 
 
 -- Use the `sendMessage` port when someone presses ENTER or clicks
@@ -80,6 +84,11 @@ update msg model =
       , Cmd.none
       )
 
+    UserChanged username ->
+      ( { model | username = username }
+      , Cmd.none
+      )
+
 
 
 -- SUBSCRIPTIONS
@@ -102,8 +111,7 @@ view : Model -> Html Msg
 view model =
   div []
     [ h1 [] [ text "Echo Chat" ]
-    , ul []
-        (List.map toChatMessage model.messages)
+    , chatMessagesWithUser model
     , input
         [ type_ "text"
         , placeholder "Draft"
@@ -112,12 +120,23 @@ view model =
         , value model.draft
         ]
         []
+    , input
+        [ type_ "text"
+        , placeholder "Username"
+        , onInput UserChanged
+        , value model.username
+        ]
+        []
     , button [ onClick Send ] [ text "Send" ]
     ]
 
-toChatMessage : String -> Html Msg
-toChatMessage message = li [] [ text message ]
+toChatMessage : String -> String -> Html Msg
+toChatMessage fromUser = \message -> li [] [ text (fromUser ++ ": " ++ message) ]
 
+chatMessagesWithUser : Model -> Html Msg
+chatMessagesWithUser model = 
+  ul []
+    (List.map (toChatMessage model.username) model.messages)
 
 -- DETECT ENTER
 
