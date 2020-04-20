@@ -5209,15 +5209,18 @@ var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$html$Html$li = _VirtualDom_node('li');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $author$project$Main$toChatMessage = function (fromUser) {
+var $author$project$Main$toChatMessage = function (message) {
+	return A2(
+		$elm$html$Html$li,
+		_List_Nil,
+		_List_fromArray(
+			[
+				$elm$html$Html$text(message)
+			]));
+};
+var $author$project$Main$toMessageWithUser = function (user) {
 	return function (message) {
-		return A2(
-			$elm$html$Html$li,
-			_List_Nil,
-			_List_fromArray(
-				[
-					$elm$html$Html$text(fromUser + (': ' + message))
-				]));
+		return user + (': ' + message);
 	};
 };
 var $elm$html$Html$ul = _VirtualDom_node('ul');
@@ -5227,8 +5230,11 @@ var $author$project$Main$chatMessagesWithUser = function (model) {
 		_List_Nil,
 		A2(
 			$elm$core$List$map,
-			$author$project$Main$toChatMessage(model.username),
-			model.messages));
+			$author$project$Main$toChatMessage,
+			A2(
+				$elm$core$List$map,
+				$author$project$Main$toMessageWithUser(model.username),
+				model.messages)));
 };
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$h1 = _VirtualDom_node('h1');

@@ -73,7 +73,6 @@ update msg model =
       , Cmd.none
       )
 
-
     Send ->
       ( { model | draft = "" }
       , sendMessage model.draft
@@ -130,13 +129,16 @@ view model =
     , button [ onClick Send ] [ text "Send" ]
     ]
 
-toChatMessage : String -> String -> Html Msg
-toChatMessage fromUser = \message -> li [] [ text (fromUser ++ ": " ++ message) ]
+toChatMessage : String -> Html Msg
+toChatMessage message = li [] [ text message ]
+
+toMessageWithUser : String -> String -> String
+toMessageWithUser user = \message -> user ++ ": " ++ message
 
 chatMessagesWithUser : Model -> Html Msg
 chatMessagesWithUser model = 
   ul []
-    (List.map (toChatMessage model.username) model.messages)
+    (model.messages |> List.map (toMessageWithUser model.username) |> List.map toChatMessage)
 
 -- DETECT ENTER
 
