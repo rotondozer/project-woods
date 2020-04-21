@@ -5144,26 +5144,34 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
+var $author$project$Types$Home = {$: 'Home'};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $author$project$Main$init = function (flags) {
+var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
-		{draft: '', messages: _List_Nil, username: 'User'},
+		{currentPage: $author$project$Types$Home, draft: '', messages: _List_Nil, username: ''},
 		$elm$core$Platform$Cmd$none);
 };
-var $author$project$Main$Recv = function (a) {
+var $author$project$Types$Recv = function (a) {
 	return {$: 'Recv', a: a};
 };
 var $elm$json$Json$Decode$string = _Json_decodeString;
 var $author$project$Main$messageReceiver = _Platform_incomingPort('messageReceiver', $elm$json$Json$Decode$string);
 var $author$project$Main$subscriptions = function (_v0) {
-	return $author$project$Main$messageReceiver($author$project$Main$Recv);
+	return $author$project$Main$messageReceiver($author$project$Types$Recv);
 };
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$Main$sendMessage = _Platform_outgoingPort('sendMessage', $elm$json$Json$Encode$string);
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
+			case 'ChangeView':
+				var newView = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{currentPage: newView}),
+					$elm$core$Platform$Cmd$none);
 			case 'DraftChanged':
 				var draft = msg.a;
 				return _Utils_Tuple2(
@@ -5198,58 +5206,12 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 		}
 	});
-var $author$project$Main$DraftChanged = function (a) {
-	return {$: 'DraftChanged', a: a};
+var $author$project$Types$ChangeView = function (a) {
+	return {$: 'ChangeView', a: a};
 };
-var $author$project$Main$Send = {$: 'Send'};
-var $author$project$Main$UserChanged = function (a) {
-	return {$: 'UserChanged', a: a};
-};
+var $author$project$Types$ChatMirror = {$: 'ChatMirror'};
 var $elm$html$Html$button = _VirtualDom_node('button');
-var $elm$html$Html$li = _VirtualDom_node('li');
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $author$project$Main$toChatMessage = function (message) {
-	return A2(
-		$elm$html$Html$li,
-		_List_Nil,
-		_List_fromArray(
-			[
-				$elm$html$Html$text(message)
-			]));
-};
-var $author$project$Main$toMessageWithUser = function (user) {
-	return function (message) {
-		return user + (': ' + message);
-	};
-};
-var $elm$html$Html$ul = _VirtualDom_node('ul');
-var $author$project$Main$chatMessagesWithUser = function (model) {
-	return A2(
-		$elm$html$Html$ul,
-		_List_Nil,
-		A2(
-			$elm$core$List$map,
-			$author$project$Main$toChatMessage,
-			A2(
-				$elm$core$List$map,
-				$author$project$Main$toMessageWithUser(model.username),
-				model.messages)));
-};
 var $elm$html$Html$div = _VirtualDom_node('div');
-var $elm$html$Html$h1 = _VirtualDom_node('h1');
-var $elm$json$Json$Decode$andThen = _Json_andThen;
-var $elm$json$Json$Decode$fail = _Json_fail;
-var $elm$json$Json$Decode$field = _Json_decodeField;
-var $author$project$Main$ifIsEnter = function (msg) {
-	return A2(
-		$elm$json$Json$Decode$andThen,
-		function (key) {
-			return (key === 'Enter') ? $elm$json$Json$Decode$succeed(msg) : $elm$json$Json$Decode$fail('some other key');
-		},
-		A2($elm$json$Json$Decode$field, 'key', $elm$json$Json$Decode$string));
-};
-var $elm$html$Html$input = _VirtualDom_node('input');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };
@@ -5267,6 +5229,56 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $elm$html$Html$h1 = _VirtualDom_node('h1');
+var $author$project$Types$DraftChanged = function (a) {
+	return {$: 'DraftChanged', a: a};
+};
+var $author$project$Types$Send = {$: 'Send'};
+var $author$project$Types$UserChanged = function (a) {
+	return {$: 'UserChanged', a: a};
+};
+var $elm$html$Html$li = _VirtualDom_node('li');
+var $author$project$ChatMirror$toChatMessage = function (message) {
+	return A2(
+		$elm$html$Html$li,
+		_List_Nil,
+		_List_fromArray(
+			[
+				$elm$html$Html$text(message)
+			]));
+};
+var $author$project$ChatMirror$toMessageWithUser = function (user) {
+	return function (message) {
+		return user + (': ' + message);
+	};
+};
+var $elm$html$Html$ul = _VirtualDom_node('ul');
+var $author$project$ChatMirror$chatMessagesWithUser = function (model) {
+	return A2(
+		$elm$html$Html$ul,
+		_List_Nil,
+		A2(
+			$elm$core$List$map,
+			$author$project$ChatMirror$toChatMessage,
+			A2(
+				$elm$core$List$map,
+				$author$project$ChatMirror$toMessageWithUser(model.username),
+				model.messages)));
+};
+var $elm$json$Json$Decode$andThen = _Json_andThen;
+var $elm$json$Json$Decode$fail = _Json_fail;
+var $elm$json$Json$Decode$field = _Json_decodeField;
+var $author$project$ChatMirror$ifIsEnter = function (msg) {
+	return A2(
+		$elm$json$Json$Decode$andThen,
+		function (key) {
+			return (key === 'Enter') ? $elm$json$Json$Decode$succeed(msg) : $elm$json$Json$Decode$fail('some other key');
+		},
+		A2($elm$json$Json$Decode$field, 'key', $elm$json$Json$Decode$string));
+};
+var $elm$html$Html$input = _VirtualDom_node('input');
 var $elm$html$Html$Events$alwaysStop = function (x) {
 	return _Utils_Tuple2(x, true);
 };
@@ -5308,7 +5320,7 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
 var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
-var $author$project$Main$view = function (model) {
+var $author$project$ChatMirror$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
 		_List_Nil,
@@ -5321,18 +5333,18 @@ var $author$project$Main$view = function (model) {
 					[
 						$elm$html$Html$text('Echo Chat')
 					])),
-				$author$project$Main$chatMessagesWithUser(model),
+				$author$project$ChatMirror$chatMessagesWithUser(model),
 				A2(
 				$elm$html$Html$input,
 				_List_fromArray(
 					[
 						$elm$html$Html$Attributes$type_('text'),
 						$elm$html$Html$Attributes$placeholder('Draft'),
-						$elm$html$Html$Events$onInput($author$project$Main$DraftChanged),
+						$elm$html$Html$Events$onInput($author$project$Types$DraftChanged),
 						A2(
 						$elm$html$Html$Events$on,
 						'keydown',
-						$author$project$Main$ifIsEnter($author$project$Main$Send)),
+						$author$project$ChatMirror$ifIsEnter($author$project$Types$Send)),
 						$elm$html$Html$Attributes$value(model.draft)
 					]),
 				_List_Nil),
@@ -5342,7 +5354,7 @@ var $author$project$Main$view = function (model) {
 					[
 						$elm$html$Html$Attributes$type_('text'),
 						$elm$html$Html$Attributes$placeholder('Username'),
-						$elm$html$Html$Events$onInput($author$project$Main$UserChanged),
+						$elm$html$Html$Events$onInput($author$project$Types$UserChanged),
 						$elm$html$Html$Attributes$value(model.username)
 					]),
 				_List_Nil),
@@ -5350,12 +5362,57 @@ var $author$project$Main$view = function (model) {
 				$elm$html$Html$button,
 				_List_fromArray(
 					[
-						$elm$html$Html$Events$onClick($author$project$Main$Send)
+						$elm$html$Html$Events$onClick($author$project$Types$Send)
 					]),
 				_List_fromArray(
 					[
 						$elm$html$Html$text('Send')
 					]))
+			]));
+};
+var $author$project$Main$viewCurrentPage = function (model) {
+	var _v0 = model.currentPage;
+	if (_v0.$ === 'Home') {
+		return A2(
+			$elm$html$Html$h1,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$elm$html$Html$text('Elm Guide Projects Home')
+				]));
+	} else {
+		return $author$project$ChatMirror$view(model);
+	}
+};
+var $author$project$Main$view = function (model) {
+	return A2(
+		$elm$html$Html$div,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick(
+						$author$project$Types$ChangeView($author$project$Types$Home))
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Home')
+					])),
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick(
+						$author$project$Types$ChangeView($author$project$Types$ChatMirror))
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Chat Mirror')
+					])),
+				$author$project$Main$viewCurrentPage(model)
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
