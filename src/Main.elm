@@ -1,10 +1,9 @@
-port module Main exposing (..)
+port module Main exposing (init, main, view)
 
-import Browser exposing (..)
-import ChatMirror exposing (..)
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
+import Browser exposing (element)
+import ChatMirror
+import Html exposing (Html, button, div, h1, text)
+import Html.Events exposing (onClick)
 import Types exposing (Model, Msg(..), Page(..))
 
 

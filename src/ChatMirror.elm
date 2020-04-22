@@ -1,8 +1,8 @@
-module ChatMirror exposing (..)
+module ChatMirror exposing (view)
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
+import Html exposing (Html, button, div, h1, input, li, text, ul)
+import Html.Attributes exposing (placeholder, type_, value)
+import Html.Events exposing (on, onClick, onInput)
 import Json.Decode as D
 import Types exposing (Model, Msg(..), Page(..))
 
