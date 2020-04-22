@@ -2,6 +2,7 @@ port module Main exposing (init, main, view)
 
 import Browser exposing (element)
 import ChatMirror
+import Counter
 import Html exposing (Html, button, div, h1, text)
 import Html.Events exposing (onClick)
 import Types exposing (Model, Msg(..), Page(..))
@@ -37,7 +38,12 @@ main =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { currentPage = Home, username = "", messages = [], draft = "" }
+    ( { currentPage = Home
+      , username = ""
+      , messages = []
+      , draft = ""
+      , counterValue = 0
+      }
     , Cmd.none
     )
 
@@ -78,6 +84,25 @@ update msg model =
             , Cmd.none
             )
 
+        Increment ->
+            ( { model | counterValue = model.counterValue + 1 }
+            , Cmd.none
+            )
+
+        Decrement ->
+            if model.counterValue == 0 then
+                ( model, Cmd.none )
+
+            else
+                ( { model | counterValue = model.counterValue - 1 }
+                , Cmd.none
+                )
+
+        Clear ->
+            ( { model | counterValue = 0 }
+            , Cmd.none
+            )
+
 
 
 -- SUBSCRIPTIONS
@@ -101,6 +126,7 @@ view model =
     div []
         [ button [ onClick (ChangeView Home) ] [ text "Home" ]
         , button [ onClick (ChangeView ChatMirror) ] [ text "Chat Mirror" ]
+        , button [ onClick (ChangeView Counter) ] [ text "Counter" ]
         , viewCurrentPage model
         ]
 
@@ -113,3 +139,6 @@ viewCurrentPage model =
 
         ChatMirror ->
             ChatMirror.view model
+
+        Counter ->
+            Counter.view model

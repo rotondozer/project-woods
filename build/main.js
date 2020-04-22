@@ -5149,7 +5149,7 @@ var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
-		{currentPage: $author$project$Types$Home, draft: '', messages: _List_Nil, username: ''},
+		{counterValue: 0, currentPage: $author$project$Types$Home, draft: '', messages: _List_Nil, username: ''},
 		$elm$core$Platform$Cmd$none);
 };
 var $author$project$Types$Recv = function (a) {
@@ -5197,12 +5197,30 @@ var $author$project$Main$update = F2(
 									[message]))
 						}),
 					$elm$core$Platform$Cmd$none);
-			default:
+			case 'UserChanged':
 				var username = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{username: username}),
+					$elm$core$Platform$Cmd$none);
+			case 'Increment':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{counterValue: model.counterValue + 1}),
+					$elm$core$Platform$Cmd$none);
+			case 'Decrement':
+				return (!model.counterValue) ? _Utils_Tuple2(model, $elm$core$Platform$Cmd$none) : _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{counterValue: model.counterValue - 1}),
+					$elm$core$Platform$Cmd$none);
+			default:
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{counterValue: 0}),
 					$elm$core$Platform$Cmd$none);
 		}
 	});
@@ -5210,6 +5228,7 @@ var $author$project$Types$ChangeView = function (a) {
 	return {$: 'ChangeView', a: a};
 };
 var $author$project$Types$ChatMirror = {$: 'ChatMirror'};
+var $author$project$Types$Counter = {$: 'Counter'};
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
@@ -5370,18 +5389,70 @@ var $author$project$ChatMirror$view = function (model) {
 					]))
 			]));
 };
+var $author$project$Types$Clear = {$: 'Clear'};
+var $author$project$Types$Decrement = {$: 'Decrement'};
+var $author$project$Types$Increment = {$: 'Increment'};
+var $author$project$Counter$view = function (model) {
+	return A2(
+		$elm$html$Html$div,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick($author$project$Types$Decrement)
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('-')
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text(
+						$elm$core$String$fromInt(model.counterValue)),
+						A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick($author$project$Types$Clear)
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Clear')
+							]))
+					])),
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick($author$project$Types$Increment)
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('+')
+					]))
+			]));
+};
 var $author$project$Main$viewCurrentPage = function (model) {
 	var _v0 = model.currentPage;
-	if (_v0.$ === 'Home') {
-		return A2(
-			$elm$html$Html$h1,
-			_List_Nil,
-			_List_fromArray(
-				[
-					$elm$html$Html$text('Elm Guide Projects Home')
-				]));
-	} else {
-		return $author$project$ChatMirror$view(model);
+	switch (_v0.$) {
+		case 'Home':
+			return A2(
+				$elm$html$Html$h1,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Elm Guide Projects Home')
+					]));
+		case 'ChatMirror':
+			return $author$project$ChatMirror$view(model);
+		default:
+			return $author$project$Counter$view(model);
 	}
 };
 var $author$project$Main$view = function (model) {
@@ -5411,6 +5482,17 @@ var $author$project$Main$view = function (model) {
 				_List_fromArray(
 					[
 						$elm$html$Html$text('Chat Mirror')
+					])),
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick(
+						$author$project$Types$ChangeView($author$project$Types$Counter))
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Counter')
 					])),
 				$author$project$Main$viewCurrentPage(model)
 			]));
