@@ -5,7 +5,8 @@ import ChatMirror
 import Counter
 import Html exposing (Html, button, div, h1, text)
 import Html.Events exposing (onClick)
-import Types exposing (Model, Msg(..), Page(..))
+import Register
+import Types exposing (Model, Msg(..), Page(..), RegistrationFormField(..))
 
 
 
@@ -43,6 +44,7 @@ init _ =
       , messages = []
       , draft = ""
       , counterValue = 0
+      , registrationForm = Register.init
       }
     , Cmd.none
     )
@@ -103,6 +105,13 @@ update msg model =
             , Cmd.none
             )
 
+        RegistrationFormChange formField ->
+            let
+                updatedForm =
+                    Register.updateForm formField model.registrationForm
+            in
+            ( { model | registrationForm = updatedForm }, Cmd.none )
+
 
 
 -- SUBSCRIPTIONS
@@ -127,6 +136,7 @@ view model =
         [ button [ onClick (ChangeView Home) ] [ text "Home" ]
         , button [ onClick (ChangeView ChatMirror) ] [ text "Chat Mirror" ]
         , button [ onClick (ChangeView Counter) ] [ text "Counter" ]
+        , button [ onClick (ChangeView Register) ] [ text "Register" ]
         , viewCurrentPage model
         ]
 
@@ -142,3 +152,6 @@ viewCurrentPage model =
 
         Counter ->
             Counter.view model
+
+        Register ->
+            Register.view model.registrationForm

@@ -1,10 +1,30 @@
-module Types exposing (Model, Msg(..), Page(..))
+module Types exposing
+    ( Model
+    , Msg(..)
+    , Page(..)
+    , RegistrationForm
+    , RegistrationFormField(..)
+    )
 
 
 type Page
     = Home
     | ChatMirror
     | Counter
+    | Register
+
+
+type RegistrationFormField
+    = Username String
+    | Password String
+    | PasswordAgain String
+
+
+type alias RegistrationForm =
+    { username : String
+    , password : String
+    , passwordAgain : String
+    }
 
 
 type alias Model =
@@ -13,6 +33,7 @@ type alias Model =
     , draft : String
     , messages : List String
     , counterValue : Int
+    , registrationForm : RegistrationForm
     }
 
 
@@ -25,3 +46,4 @@ type Msg
     | Decrement
     | Increment
     | Clear
+    | RegistrationFormChange RegistrationFormField

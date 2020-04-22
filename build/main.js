@@ -5145,11 +5145,12 @@ var $elm$core$Task$perform = F2(
 	});
 var $elm$browser$Browser$element = _Browser_element;
 var $author$project$Types$Home = {$: 'Home'};
+var $author$project$Register$init = {password: '', passwordAgain: '', username: ''};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
-		{counterValue: 0, currentPage: $author$project$Types$Home, draft: '', messages: _List_Nil, username: ''},
+		{counterValue: 0, currentPage: $author$project$Types$Home, draft: '', messages: _List_Nil, registrationForm: $author$project$Register$init, username: ''},
 		$elm$core$Platform$Cmd$none);
 };
 var $author$project$Types$Recv = function (a) {
@@ -5162,6 +5163,26 @@ var $author$project$Main$subscriptions = function (_v0) {
 };
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$Main$sendMessage = _Platform_outgoingPort('sendMessage', $elm$json$Json$Encode$string);
+var $author$project$Register$updateForm = F2(
+	function (formField, form) {
+		switch (formField.$) {
+			case 'Username':
+				var value = formField.a;
+				return _Utils_update(
+					form,
+					{username: value});
+			case 'Password':
+				var value = formField.a;
+				return _Utils_update(
+					form,
+					{password: value});
+			default:
+				var value = formField.a;
+				return _Utils_update(
+					form,
+					{passwordAgain: value});
+		}
+	});
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -5216,11 +5237,19 @@ var $author$project$Main$update = F2(
 						model,
 						{counterValue: model.counterValue - 1}),
 					$elm$core$Platform$Cmd$none);
-			default:
+			case 'Clear':
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{counterValue: 0}),
+					$elm$core$Platform$Cmd$none);
+			default:
+				var formField = msg.a;
+				var updatedForm = A2($author$project$Register$updateForm, formField, model.registrationForm);
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{registrationForm: updatedForm}),
 					$elm$core$Platform$Cmd$none);
 		}
 	});
@@ -5229,6 +5258,7 @@ var $author$project$Types$ChangeView = function (a) {
 };
 var $author$project$Types$ChatMirror = {$: 'ChatMirror'};
 var $author$project$Types$Counter = {$: 'Counter'};
+var $author$project$Types$Register = {$: 'Register'};
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
@@ -5438,6 +5468,62 @@ var $author$project$Counter$view = function (model) {
 					]))
 			]));
 };
+var $author$project$Types$Password = function (a) {
+	return {$: 'Password', a: a};
+};
+var $author$project$Types$PasswordAgain = function (a) {
+	return {$: 'PasswordAgain', a: a};
+};
+var $author$project$Types$RegistrationFormChange = function (a) {
+	return {$: 'RegistrationFormChange', a: a};
+};
+var $author$project$Types$Username = function (a) {
+	return {$: 'Username', a: a};
+};
+var $elm$core$Basics$composeR = F3(
+	function (f, g, x) {
+		return g(
+			f(x));
+	});
+var $author$project$Register$viewInput = F4(
+	function (t, p, v, toMsg) {
+		return A2(
+			$elm$html$Html$input,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$type_(t),
+					$elm$html$Html$Attributes$placeholder(p),
+					$elm$html$Html$Attributes$value(v),
+					$elm$html$Html$Events$onInput(toMsg)
+				]),
+			_List_Nil);
+	});
+var $author$project$Register$view = function (form) {
+	return A2(
+		$elm$html$Html$div,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A4(
+				$author$project$Register$viewInput,
+				'text',
+				'Username',
+				form.username,
+				A2($elm$core$Basics$composeR, $author$project$Types$Username, $author$project$Types$RegistrationFormChange)),
+				A4(
+				$author$project$Register$viewInput,
+				'password',
+				'Password',
+				form.password,
+				A2($elm$core$Basics$composeR, $author$project$Types$Password, $author$project$Types$RegistrationFormChange)),
+				A4(
+				$author$project$Register$viewInput,
+				'password',
+				'Confirm Passowrd',
+				form.passwordAgain,
+				A2($elm$core$Basics$composeR, $author$project$Types$PasswordAgain, $author$project$Types$RegistrationFormChange))
+			]));
+};
 var $author$project$Main$viewCurrentPage = function (model) {
 	var _v0 = model.currentPage;
 	switch (_v0.$) {
@@ -5451,8 +5537,10 @@ var $author$project$Main$viewCurrentPage = function (model) {
 					]));
 		case 'ChatMirror':
 			return $author$project$ChatMirror$view(model);
-		default:
+		case 'Counter':
 			return $author$project$Counter$view(model);
+		default:
+			return $author$project$Register$view(model.registrationForm);
 	}
 };
 var $author$project$Main$view = function (model) {
@@ -5493,6 +5581,17 @@ var $author$project$Main$view = function (model) {
 				_List_fromArray(
 					[
 						$elm$html$Html$text('Counter')
+					])),
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick(
+						$author$project$Types$ChangeView($author$project$Types$Register))
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Register')
 					])),
 				$author$project$Main$viewCurrentPage(model)
 			]));
