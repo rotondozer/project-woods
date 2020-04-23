@@ -3,7 +3,7 @@ module Register exposing (init, updateForm, view)
 import Html exposing (Html, div, input)
 import Html.Attributes exposing (placeholder, type_, value)
 import Html.Events exposing (onInput)
-import Types exposing (Msg(..), RegistrationForm, RegistrationFormField(..))
+import Types exposing (Msg(..), RegistrationForm, RegistrationFormFieldChange(..))
 
 
 init : RegistrationForm
@@ -11,7 +11,7 @@ init =
     { username = "", password = "", passwordAgain = "" }
 
 
-updateForm : RegistrationFormField -> RegistrationForm -> RegistrationForm
+updateForm : RegistrationFormFieldChange -> RegistrationForm -> RegistrationForm
 updateForm formField form =
     case formField of
         Username value ->
@@ -27,12 +27,12 @@ updateForm formField form =
 view : RegistrationForm -> Html Msg
 view form =
     div []
-        [ viewInput "text" "Username" form.username (Username >> RegistrationFormChange)
-        , viewInput "password" "Password" form.password (Password >> RegistrationFormChange)
-        , viewInput "password" "Confirm Password" form.passwordAgain (PasswordAgain >> RegistrationFormChange)
+        [ viewInput "text" "Username" form.username Username
+        , viewInput "password" "Password" form.password Password
+        , viewInput "password" "Confirm Password" form.passwordAgain PasswordAgain
         ]
 
 
-viewInput : String -> String -> String -> (String -> Msg) -> Html Msg
-viewInput t p v toMsg =
-    input [ type_ t, placeholder p, value v, onInput toMsg ] []
+viewInput : String -> String -> String -> (String -> RegistrationFormFieldChange) -> Html Msg
+viewInput t p v fieldChange =
+    input [ type_ t, placeholder p, value v, onInput (fieldChange >> RegistrationFormChange) ] []

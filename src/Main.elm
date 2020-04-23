@@ -6,7 +6,7 @@ import Counter
 import Html exposing (Html, button, div, h1, text)
 import Html.Events exposing (onClick)
 import Register
-import Types exposing (Model, Msg(..), Page(..), RegistrationFormField(..))
+import Types exposing (Model, Msg(..), Page(..), RegistrationFormFieldChange(..))
 
 
 

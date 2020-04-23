@@ -3,7 +3,7 @@ module Types exposing
     , Msg(..)
     , Page(..)
     , RegistrationForm
-    , RegistrationFormField(..)
+    , RegistrationFormFieldChange(..)
     )
 
 
@@ -14,7 +14,7 @@ type Page
     | Register
 
 
-type RegistrationFormField
+type RegistrationFormFieldChange
     = Username String
     | Password String
     | PasswordAgain String
@@ -46,4 +46,4 @@ type Msg
     | Decrement
     | Increment
     | Clear
-    | RegistrationFormChange RegistrationFormField
+    | RegistrationFormChange RegistrationFormFieldChange
