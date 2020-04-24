@@ -5535,6 +5535,29 @@ var $author$project$Register$viewInput = F4(
 				]),
 			_List_Nil);
 	});
+var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
+var $author$project$Register$viewValidation = function (form) {
+	return _Utils_eq(form.password, form.passwordAgain) ? ((form.password === '') ? A2($elm$html$Html$div, _List_Nil, _List_Nil) : A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				A2($elm$html$Html$Attributes$style, 'color', 'green')
+			]),
+		_List_fromArray(
+			[
+				$elm$html$Html$text('OK')
+			]))) : A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				A2($elm$html$Html$Attributes$style, 'color', 'red')
+			]),
+		_List_fromArray(
+			[
+				$elm$html$Html$text('Passwords do not match!')
+			]));
+};
 var $author$project$Register$view = function (form) {
 	return A2(
 		$elm$html$Html$div,
@@ -5543,7 +5566,19 @@ var $author$project$Register$view = function (form) {
 			[
 				A4($author$project$Register$viewInput, 'text', 'Username', form.username, $author$project$Types$Username),
 				A4($author$project$Register$viewInput, 'password', 'Password', form.password, $author$project$Types$Password),
-				A4($author$project$Register$viewInput, 'password', 'Confirm Password', form.passwordAgain, $author$project$Types$PasswordAgain)
+				A4($author$project$Register$viewInput, 'password', 'Confirm Password', form.passwordAgain, $author$project$Types$PasswordAgain),
+				$author$project$Register$viewValidation(form),
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick(
+						$author$project$Types$ChangeView($author$project$Types$Home))
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Create Account')
+					]))
 			]));
 };
 var $author$project$Main$viewCurrentPage = function (model) {
