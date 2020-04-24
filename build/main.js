@@ -5145,24 +5145,67 @@ var $elm$core$Task$perform = F2(
 	});
 var $elm$browser$Browser$element = _Browser_element;
 var $author$project$Types$Home = {$: 'Home'};
+var $author$project$ChatMirror$init = {draft: '', messages: _List_Nil, username: ''};
 var $author$project$Register$init = {password: '', passwordAgain: '', username: ''};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
-		{counterValue: 0, currentPage: $author$project$Types$Home, draft: '', messages: _List_Nil, registrationForm: $author$project$Register$init, username: ''},
+		{chat: $author$project$ChatMirror$init, counterValue: 0, currentPage: $author$project$Types$Home, registrationForm: $author$project$Register$init},
 		$elm$core$Platform$Cmd$none);
 };
-var $author$project$Types$Recv = function (a) {
-	return {$: 'Recv', a: a};
+var $author$project$Types$Receive = function (a) {
+	return {$: 'Receive', a: a};
 };
+var $author$project$Types$UpdateChat = function (a) {
+	return {$: 'UpdateChat', a: a};
+};
+var $elm$core$Basics$composeR = F3(
+	function (f, g, x) {
+		return g(
+			f(x));
+	});
 var $elm$json$Json$Decode$string = _Json_decodeString;
 var $author$project$Main$messageReceiver = _Platform_incomingPort('messageReceiver', $elm$json$Json$Decode$string);
 var $author$project$Main$subscriptions = function (_v0) {
-	return $author$project$Main$messageReceiver($author$project$Types$Recv);
+	return $author$project$Main$messageReceiver(
+		A2($elm$core$Basics$composeR, $author$project$Types$Receive, $author$project$Types$UpdateChat));
 };
+var $elm$core$Debug$log = _Debug_log;
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$Main$sendMessage = _Platform_outgoingPort('sendMessage', $elm$json$Json$Encode$string);
+var $author$project$ChatMirror$updateChat = F2(
+	function (chatChange, chat) {
+		switch (chatChange.$) {
+			case 'Draft':
+				var updatedMessage = chatChange.a;
+				return _Utils_update(
+					chat,
+					{draft: updatedMessage});
+			case 'User':
+				var newUser = chatChange.a;
+				return _Utils_update(
+					chat,
+					{username: newUser});
+			case 'Receive':
+				var message = chatChange.a;
+				return A2(
+					$elm$core$Debug$log,
+					'Receive return value',
+					_Utils_update(
+						chat,
+						{
+							messages: _Utils_ap(
+								chat.messages,
+								_List_fromArray(
+									[message]))
+						}));
+			default:
+				return _Utils_update(
+					chat,
+					{draft: ''});
+		}
+	});
 var $author$project$Register$updateForm = F2(
 	function (formField, form) {
 		switch (formField.$) {
@@ -5193,38 +5236,28 @@ var $author$project$Main$update = F2(
 						model,
 						{currentPage: newView}),
 					$elm$core$Platform$Cmd$none);
-			case 'DraftChanged':
-				var draft = msg.a;
+			case 'UpdateChat':
+				var chatChange = msg.a;
+				var updatedChat = A2(
+					$elm$core$Debug$log,
+					'updated chat',
+					A2($author$project$ChatMirror$updateChat, chatChange, model.chat));
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{draft: draft}),
-					$elm$core$Platform$Cmd$none);
-			case 'Send':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{draft: ''}),
-					$author$project$Main$sendMessage(model.draft));
-			case 'Recv':
-				var message = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							messages: _Utils_ap(
-								model.messages,
-								_List_fromArray(
-									[message]))
-						}),
-					$elm$core$Platform$Cmd$none);
-			case 'UserChanged':
-				var username = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{username: username}),
-					$elm$core$Platform$Cmd$none);
+						{chat: updatedChat}),
+					function () {
+						switch (chatChange.$) {
+							case 'Draft':
+								return $elm$core$Platform$Cmd$none;
+							case 'User':
+								return $elm$core$Platform$Cmd$none;
+							case 'Receive':
+								return $elm$core$Platform$Cmd$none;
+							default:
+								return $author$project$Main$sendMessage(model.chat.draft);
+						}
+					}());
 			case 'Increment':
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -5244,8 +5277,8 @@ var $author$project$Main$update = F2(
 						{counterValue: 0}),
 					$elm$core$Platform$Cmd$none);
 			default:
-				var formField = msg.a;
-				var updatedForm = A2($author$project$Register$updateForm, formField, model.registrationForm);
+				var formFieldChange = msg.a;
+				var updatedForm = A2($author$project$Register$updateForm, formFieldChange, model.registrationForm);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -5281,12 +5314,12 @@ var $elm$html$Html$Events$onClick = function (msg) {
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
-var $author$project$Types$DraftChanged = function (a) {
-	return {$: 'DraftChanged', a: a};
+var $author$project$Types$Draft = function (a) {
+	return {$: 'Draft', a: a};
 };
 var $author$project$Types$Send = {$: 'Send'};
-var $author$project$Types$UserChanged = function (a) {
-	return {$: 'UserChanged', a: a};
+var $author$project$Types$User = function (a) {
+	return {$: 'User', a: a};
 };
 var $elm$html$Html$li = _VirtualDom_node('li');
 var $author$project$ChatMirror$toChatMessage = function (message) {
@@ -5304,7 +5337,7 @@ var $author$project$ChatMirror$toMessageWithUser = function (user) {
 	};
 };
 var $elm$html$Html$ul = _VirtualDom_node('ul');
-var $author$project$ChatMirror$chatMessagesWithUser = function (model) {
+var $author$project$ChatMirror$chatMessagesWithUser = function (chat) {
 	return A2(
 		$elm$html$Html$ul,
 		_List_Nil,
@@ -5313,8 +5346,8 @@ var $author$project$ChatMirror$chatMessagesWithUser = function (model) {
 			$author$project$ChatMirror$toChatMessage,
 			A2(
 				$elm$core$List$map,
-				$author$project$ChatMirror$toMessageWithUser(model.username),
-				model.messages)));
+				$author$project$ChatMirror$toMessageWithUser(chat.username),
+				chat.messages)));
 };
 var $elm$json$Json$Decode$andThen = _Json_andThen;
 var $elm$json$Json$Decode$fail = _Json_fail;
@@ -5369,7 +5402,7 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
 var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
-var $author$project$ChatMirror$view = function (model) {
+var $author$project$ChatMirror$view = function (chat) {
 	return A2(
 		$elm$html$Html$div,
 		_List_Nil,
@@ -5382,19 +5415,21 @@ var $author$project$ChatMirror$view = function (model) {
 					[
 						$elm$html$Html$text('Echo Chat')
 					])),
-				$author$project$ChatMirror$chatMessagesWithUser(model),
+				$author$project$ChatMirror$chatMessagesWithUser(chat),
 				A2(
 				$elm$html$Html$input,
 				_List_fromArray(
 					[
 						$elm$html$Html$Attributes$type_('text'),
 						$elm$html$Html$Attributes$placeholder('Draft'),
-						$elm$html$Html$Events$onInput($author$project$Types$DraftChanged),
+						$elm$html$Html$Events$onInput(
+						A2($elm$core$Basics$composeR, $author$project$Types$Draft, $author$project$Types$UpdateChat)),
 						A2(
 						$elm$html$Html$Events$on,
 						'keydown',
-						$author$project$ChatMirror$ifIsEnter($author$project$Types$Send)),
-						$elm$html$Html$Attributes$value(model.draft)
+						$author$project$ChatMirror$ifIsEnter(
+							$author$project$Types$UpdateChat($author$project$Types$Send))),
+						$elm$html$Html$Attributes$value(chat.draft)
 					]),
 				_List_Nil),
 				A2(
@@ -5403,15 +5438,17 @@ var $author$project$ChatMirror$view = function (model) {
 					[
 						$elm$html$Html$Attributes$type_('text'),
 						$elm$html$Html$Attributes$placeholder('Username'),
-						$elm$html$Html$Events$onInput($author$project$Types$UserChanged),
-						$elm$html$Html$Attributes$value(model.username)
+						$elm$html$Html$Events$onInput(
+						A2($elm$core$Basics$composeR, $author$project$Types$User, $author$project$Types$UpdateChat)),
+						$elm$html$Html$Attributes$value(chat.username)
 					]),
 				_List_Nil),
 				A2(
 				$elm$html$Html$button,
 				_List_fromArray(
 					[
-						$elm$html$Html$Events$onClick($author$project$Types$Send)
+						$elm$html$Html$Events$onClick(
+						$author$project$Types$UpdateChat($author$project$Types$Send))
 					]),
 				_List_fromArray(
 					[
@@ -5474,19 +5511,14 @@ var $author$project$Types$Password = function (a) {
 var $author$project$Types$PasswordAgain = function (a) {
 	return {$: 'PasswordAgain', a: a};
 };
-var $author$project$Types$RegistrationFormChange = function (a) {
-	return {$: 'RegistrationFormChange', a: a};
-};
 var $author$project$Types$Username = function (a) {
 	return {$: 'Username', a: a};
 };
-var $elm$core$Basics$composeR = F3(
-	function (f, g, x) {
-		return g(
-			f(x));
-	});
+var $author$project$Types$UpdateRegistrationForm = function (a) {
+	return {$: 'UpdateRegistrationForm', a: a};
+};
 var $author$project$Register$viewInput = F4(
-	function (t, p, v, toMsg) {
+	function (t, p, v, fieldChange) {
 		return A2(
 			$elm$html$Html$input,
 			_List_fromArray(
@@ -5494,7 +5526,8 @@ var $author$project$Register$viewInput = F4(
 					$elm$html$Html$Attributes$type_(t),
 					$elm$html$Html$Attributes$placeholder(p),
 					$elm$html$Html$Attributes$value(v),
-					$elm$html$Html$Events$onInput(toMsg)
+					$elm$html$Html$Events$onInput(
+					A2($elm$core$Basics$composeR, fieldChange, $author$project$Types$UpdateRegistrationForm))
 				]),
 			_List_Nil);
 	});
@@ -5504,24 +5537,9 @@ var $author$project$Register$view = function (form) {
 		_List_Nil,
 		_List_fromArray(
 			[
-				A4(
-				$author$project$Register$viewInput,
-				'text',
-				'Username',
-				form.username,
-				A2($elm$core$Basics$composeR, $author$project$Types$Username, $author$project$Types$RegistrationFormChange)),
-				A4(
-				$author$project$Register$viewInput,
-				'password',
-				'Password',
-				form.password,
-				A2($elm$core$Basics$composeR, $author$project$Types$Password, $author$project$Types$RegistrationFormChange)),
-				A4(
-				$author$project$Register$viewInput,
-				'password',
-				'Confirm Passowrd',
-				form.passwordAgain,
-				A2($elm$core$Basics$composeR, $author$project$Types$PasswordAgain, $author$project$Types$RegistrationFormChange))
+				A4($author$project$Register$viewInput, 'text', 'Username', form.username, $author$project$Types$Username),
+				A4($author$project$Register$viewInput, 'password', 'Password', form.password, $author$project$Types$Password),
+				A4($author$project$Register$viewInput, 'password', 'Confirm Password', form.passwordAgain, $author$project$Types$PasswordAgain)
 			]));
 };
 var $author$project$Main$viewCurrentPage = function (model) {
@@ -5536,7 +5554,7 @@ var $author$project$Main$viewCurrentPage = function (model) {
 						$elm$html$Html$text('Elm Guide Projects Home')
 					]));
 		case 'ChatMirror':
-			return $author$project$ChatMirror$view(model);
+			return $author$project$ChatMirror$view(model.chat);
 		case 'Counter':
 			return $author$project$Counter$view(model);
 		default:

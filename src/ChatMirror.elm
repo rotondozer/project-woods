@@ -1,37 +1,65 @@
-module ChatMirror exposing (view)
+module ChatMirror exposing (init, updateChat, view)
 
 import Html exposing (Html, button, div, h1, input, li, text, ul)
 import Html.Attributes exposing (placeholder, type_, value)
 import Html.Events exposing (on, onClick, onInput)
 import Json.Decode as D
-import Types exposing (Model, Msg(..), Page(..))
+import Types exposing (Chat, ChatChange(..), Msg(..), Page(..))
+
+
+init : Chat
+init =
+    { username = ""
+    , draft = ""
+    , messages = []
+    }
+
+
+
+-- UPDATE
+
+
+updateChat : ChatChange -> Chat -> Chat
+updateChat chatChange chat =
+    case chatChange of
+        Draft updatedMessage ->
+            { chat | draft = updatedMessage }
+
+        User newUser ->
+            { chat | username = newUser }
+
+        Receive message ->
+            { chat | messages = chat.messages ++ [ message ] }
+
+        Send ->
+            { chat | draft = "" }
 
 
 
 -- VIEW
 
 
-view : Model -> Html Msg
-view model =
+view : Chat -> Html Msg
+view chat =
     div []
         [ h1 [] [ text "Echo Chat" ]
-        , chatMessagesWithUser model
+        , chatMessagesWithUser chat
         , input
             [ type_ "text"
             , placeholder "Draft"
-            , onInput DraftChanged
-            , on "keydown" (ifIsEnter Send)
-            , value model.draft
+            , onInput (Draft >> UpdateChat)
+            , on "keydown" (ifIsEnter (UpdateChat Send))
+            , value chat.draft
             ]
             []
         , input
             [ type_ "text"
             , placeholder "Username"
-            , onInput UserChanged
-            , value model.username
+            , onInput (User >> UpdateChat)
+            , value chat.username
             ]
             []
-        , button [ onClick Send ] [ text "Send" ]
+        , button [ onClick (UpdateChat Send) ] [ text "Send" ]
         ]
 
 
@@ -45,10 +73,10 @@ toMessageWithUser user =
     \message -> user ++ ": " ++ message
 
 
-chatMessagesWithUser : Model -> Html Msg
-chatMessagesWithUser model =
+chatMessagesWithUser : Chat -> Html Msg
+chatMessagesWithUser chat =
     ul []
-        (model.messages |> List.map (toMessageWithUser model.username) |> List.map toChatMessage)
+        (chat.messages |> List.map (toMessageWithUser chat.username) |> List.map toChatMessage)
 
 
 

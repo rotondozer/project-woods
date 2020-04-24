@@ -6,7 +6,7 @@ import Counter
 import Html exposing (Html, button, div, h1, text)
 import Html.Events exposing (onClick)
 import Register
-import Types exposing (Model, Msg(..), Page(..), RegistrationFormFieldChange(..))
+import Types exposing (ChatChange(..), Model, Msg(..), Page(..), RegistrationFormFieldChange(..))
 
 
 
@@ -40,9 +40,7 @@ main =
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( { currentPage = Home
-      , username = ""
-      , messages = []
-      , draft = ""
+      , chat = ChatMirror.init
       , counterValue = 0
       , registrationForm = Register.init
       }
@@ -66,24 +64,24 @@ update msg model =
             , Cmd.none
             )
 
-        DraftChanged draft ->
-            ( { model | draft = draft }
-            , Cmd.none
-            )
+        UpdateChat chatChange ->
+            let
+                updatedChat =
+                    ChatMirror.updateChat chatChange model.chat
+            in
+            ( { model | chat = updatedChat }
+            , case chatChange of
+                Draft _ ->
+                    Cmd.none
 
-        Send ->
-            ( { model | draft = "" }
-            , sendMessage model.draft
-            )
+                User _ ->
+                    Cmd.none
 
-        Recv message ->
-            ( { model | messages = model.messages ++ [ message ] }
-            , Cmd.none
-            )
+                Receive _ ->
+                    Cmd.none
 
-        UserChanged username ->
-            ( { model | username = username }
-            , Cmd.none
+                Send ->
+                    sendMessage model.chat.draft
             )
 
         Increment ->
@@ -105,10 +103,10 @@ update msg model =
             , Cmd.none
             )
 
-        RegistrationFormChange formField ->
+        UpdateRegistrationForm formFieldChange ->
             let
                 updatedForm =
-                    Register.updateForm formField model.registrationForm
+                    Register.updateForm formFieldChange model.registrationForm
             in
             ( { model | registrationForm = updatedForm }, Cmd.none )
 
@@ -123,7 +121,7 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    messageReceiver Recv
+    messageReceiver (Receive >> UpdateChat)
 
 
 
@@ -148,7 +146,7 @@ viewCurrentPage model =
             h1 [] [ text "Elm Guide Projects Home" ]
 
         ChatMirror ->
-            ChatMirror.view model
+            ChatMirror.view model.chat
 
         Counter ->
             Counter.view model

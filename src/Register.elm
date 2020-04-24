@@ -35,4 +35,4 @@ view form =
 
 viewInput : String -> String -> String -> (String -> RegistrationFormFieldChange) -> Html Msg
 viewInput t p v fieldChange =
-    input [ type_ t, placeholder p, value v, onInput (fieldChange >> RegistrationFormChange) ] []
+    input [ type_ t, placeholder p, value v, onInput (fieldChange >> UpdateRegistrationForm) ] []
