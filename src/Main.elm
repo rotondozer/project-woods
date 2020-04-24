@@ -65,23 +65,8 @@ update msg model =
             )
 
         UpdateChat chatChange ->
-            let
-                updatedChat =
-                    ChatMirror.updateChat chatChange model.chat
-            in
-            ( { model | chat = updatedChat }
-            , case chatChange of
-                Draft _ ->
-                    Cmd.none
-
-                User _ ->
-                    Cmd.none
-
-                Receive _ ->
-                    Cmd.none
-
-                Send ->
-                    sendMessage model.chat.draft
+            ( { model | chat = ChatMirror.updateChat chatChange model.chat }
+            , ChatMirror.updateChatCmd sendMessage chatChange model.chat
             )
 
         Increment ->
@@ -104,11 +89,9 @@ update msg model =
             )
 
         UpdateRegistrationForm formFieldChange ->
-            let
-                updatedForm =
-                    Register.updateForm formFieldChange model.registrationForm
-            in
-            ( { model | registrationForm = updatedForm }, Cmd.none )
+            ( { model | registrationForm = Register.updateForm formFieldChange model.registrationForm }
+            , Cmd.none
+            )
 
 
 

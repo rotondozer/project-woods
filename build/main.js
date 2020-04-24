@@ -5171,7 +5171,6 @@ var $author$project$Main$subscriptions = function (_v0) {
 	return $author$project$Main$messageReceiver(
 		A2($elm$core$Basics$composeR, $author$project$Types$Receive, $author$project$Types$UpdateChat));
 };
-var $elm$core$Debug$log = _Debug_log;
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$Main$sendMessage = _Platform_outgoingPort('sendMessage', $elm$json$Json$Encode$string);
 var $author$project$ChatMirror$updateChat = F2(
@@ -5189,21 +5188,31 @@ var $author$project$ChatMirror$updateChat = F2(
 					{username: newUser});
 			case 'Receive':
 				var message = chatChange.a;
-				return A2(
-					$elm$core$Debug$log,
-					'Receive return value',
-					_Utils_update(
-						chat,
-						{
-							messages: _Utils_ap(
-								chat.messages,
-								_List_fromArray(
-									[message]))
-						}));
+				return _Utils_update(
+					chat,
+					{
+						messages: _Utils_ap(
+							chat.messages,
+							_List_fromArray(
+								[message]))
+					});
 			default:
 				return _Utils_update(
 					chat,
 					{draft: ''});
+		}
+	});
+var $author$project$ChatMirror$updateChatCmd = F3(
+	function (sendMessage, chatChange, chat) {
+		switch (chatChange.$) {
+			case 'Draft':
+				return $elm$core$Platform$Cmd$none;
+			case 'User':
+				return $elm$core$Platform$Cmd$none;
+			case 'Receive':
+				return $elm$core$Platform$Cmd$none;
+			default:
+				return sendMessage(chat.draft);
 		}
 	});
 var $author$project$Register$updateForm = F2(
@@ -5238,26 +5247,13 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 			case 'UpdateChat':
 				var chatChange = msg.a;
-				var updatedChat = A2(
-					$elm$core$Debug$log,
-					'updated chat',
-					A2($author$project$ChatMirror$updateChat, chatChange, model.chat));
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{chat: updatedChat}),
-					function () {
-						switch (chatChange.$) {
-							case 'Draft':
-								return $elm$core$Platform$Cmd$none;
-							case 'User':
-								return $elm$core$Platform$Cmd$none;
-							case 'Receive':
-								return $elm$core$Platform$Cmd$none;
-							default:
-								return $author$project$Main$sendMessage(model.chat.draft);
-						}
-					}());
+						{
+							chat: A2($author$project$ChatMirror$updateChat, chatChange, model.chat)
+						}),
+					A3($author$project$ChatMirror$updateChatCmd, $author$project$Main$sendMessage, chatChange, model.chat));
 			case 'Increment':
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -5278,11 +5274,12 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 			default:
 				var formFieldChange = msg.a;
-				var updatedForm = A2($author$project$Register$updateForm, formFieldChange, model.registrationForm);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{registrationForm: updatedForm}),
+						{
+							registrationForm: A2($author$project$Register$updateForm, formFieldChange, model.registrationForm)
+						}),
 					$elm$core$Platform$Cmd$none);
 		}
 	});

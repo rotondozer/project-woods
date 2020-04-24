@@ -1,4 +1,4 @@
-module ChatMirror exposing (init, updateChat, view)
+module ChatMirror exposing (init, updateChat, updateChatCmd, view)
 
 import Html exposing (Html, button, div, h1, input, li, text, ul)
 import Html.Attributes exposing (placeholder, type_, value)
@@ -33,6 +33,22 @@ updateChat chatChange chat =
 
         Send ->
             { chat | draft = "" }
+
+
+updateChatCmd : (String -> Cmd Msg) -> ChatChange -> Chat -> Cmd Msg
+updateChatCmd sendMessage chatChange chat =
+    case chatChange of
+        Draft _ ->
+            Cmd.none
+
+        User _ ->
+            Cmd.none
+
+        Receive _ ->
+            Cmd.none
+
+        Send ->
+            sendMessage chat.draft
 
 
 
