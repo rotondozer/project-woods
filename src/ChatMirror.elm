@@ -1,10 +1,10 @@
-module ChatMirror exposing (init, updateChat, updateChatCmd, view)
+module ChatMirror exposing (init, update, updateCmd, view)
 
 import Html exposing (Html, button, div, h1, input, li, text, ul)
 import Html.Attributes exposing (placeholder, type_, value)
 import Html.Events exposing (on, onClick, onInput)
 import Json.Decode as D
-import Types exposing (Chat, ChatChange(..), Msg(..), Page(..))
+import Types exposing (Chat, ChatMsg(..), Msg(..), Page(..))
 
 
 init : Chat
@@ -19,9 +19,9 @@ init =
 -- UPDATE
 
 
-updateChat : ChatChange -> Chat -> Chat
-updateChat chatChange chat =
-    case chatChange of
+update : ChatMsg -> Chat -> Chat
+update chatMsg chat =
+    case chatMsg of
         Draft updatedMessage ->
             { chat | draft = updatedMessage }
 
@@ -35,9 +35,9 @@ updateChat chatChange chat =
             { chat | draft = "" }
 
 
-updateChatCmd : (String -> Cmd Msg) -> ChatChange -> Chat -> Cmd Msg
-updateChatCmd sendMessage chatChange chat =
-    case chatChange of
+updateCmd : (String -> Cmd Msg) -> ChatMsg -> Chat -> Cmd Msg
+updateCmd sendMessage chatMsg chat =
+    case chatMsg of
         Draft _ ->
             Cmd.none
 

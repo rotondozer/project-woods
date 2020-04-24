@@ -1,11 +1,12 @@
 module Types exposing
     ( Chat
-    , ChatChange(..)
+    , ChatMsg(..)
+    , CounterMsg(..)
     , Model
     , Msg(..)
     , Page(..)
     , RegistrationForm
-    , RegistrationFormFieldChange(..)
+    , RegistrationMsg(..)
     )
 
 
@@ -23,7 +24,7 @@ type alias RegistrationForm =
     }
 
 
-type RegistrationFormFieldChange
+type RegistrationMsg
     = Username String
     | Password String
     | PasswordAgain String
@@ -36,11 +37,17 @@ type alias Chat =
     }
 
 
-type ChatChange
+type ChatMsg
     = Draft String
     | User String
     | Send
     | Receive String
+
+
+type CounterMsg
+    = Increment
+    | Decrement
+    | Clear
 
 
 type alias Model =
@@ -53,8 +60,6 @@ type alias Model =
 
 type Msg
     = ChangeView Page
-    | UpdateChat ChatChange
-    | Decrement
-    | Increment
-    | Clear
-    | UpdateRegistrationForm RegistrationFormFieldChange
+    | UpdateChat ChatMsg
+    | UpdateCounter CounterMsg
+    | UpdateRegistrationForm RegistrationMsg

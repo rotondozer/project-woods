@@ -5173,21 +5173,21 @@ var $author$project$Main$subscriptions = function (_v0) {
 };
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$Main$sendMessage = _Platform_outgoingPort('sendMessage', $elm$json$Json$Encode$string);
-var $author$project$ChatMirror$updateChat = F2(
-	function (chatChange, chat) {
-		switch (chatChange.$) {
+var $author$project$ChatMirror$update = F2(
+	function (chatMsg, chat) {
+		switch (chatMsg.$) {
 			case 'Draft':
-				var updatedMessage = chatChange.a;
+				var updatedMessage = chatMsg.a;
 				return _Utils_update(
 					chat,
 					{draft: updatedMessage});
 			case 'User':
-				var newUser = chatChange.a;
+				var newUser = chatMsg.a;
 				return _Utils_update(
 					chat,
 					{username: newUser});
 			case 'Receive':
-				var message = chatChange.a;
+				var message = chatMsg.a;
 				return _Utils_update(
 					chat,
 					{
@@ -5202,9 +5202,40 @@ var $author$project$ChatMirror$updateChat = F2(
 					{draft: ''});
 		}
 	});
-var $author$project$ChatMirror$updateChatCmd = F3(
-	function (sendMessage, chatChange, chat) {
-		switch (chatChange.$) {
+var $author$project$Counter$update = F2(
+	function (counterMsg, counterValue) {
+		switch (counterMsg.$) {
+			case 'Increment':
+				return counterValue + 1;
+			case 'Decrement':
+				return (!counterValue) ? counterValue : (counterValue - 1);
+			default:
+				return 0;
+		}
+	});
+var $author$project$Register$update = F2(
+	function (registrationMsg, form) {
+		switch (registrationMsg.$) {
+			case 'Username':
+				var value = registrationMsg.a;
+				return _Utils_update(
+					form,
+					{username: value});
+			case 'Password':
+				var value = registrationMsg.a;
+				return _Utils_update(
+					form,
+					{password: value});
+			default:
+				var value = registrationMsg.a;
+				return _Utils_update(
+					form,
+					{passwordAgain: value});
+		}
+	});
+var $author$project$ChatMirror$updateCmd = F3(
+	function (sendMessage, chatMsg, chat) {
+		switch (chatMsg.$) {
 			case 'Draft':
 				return $elm$core$Platform$Cmd$none;
 			case 'User':
@@ -5213,26 +5244,6 @@ var $author$project$ChatMirror$updateChatCmd = F3(
 				return $elm$core$Platform$Cmd$none;
 			default:
 				return sendMessage(chat.draft);
-		}
-	});
-var $author$project$Register$updateForm = F2(
-	function (formField, form) {
-		switch (formField.$) {
-			case 'Username':
-				var value = formField.a;
-				return _Utils_update(
-					form,
-					{username: value});
-			case 'Password':
-				var value = formField.a;
-				return _Utils_update(
-					form,
-					{password: value});
-			default:
-				var value = formField.a;
-				return _Utils_update(
-					form,
-					{passwordAgain: value});
 		}
 	});
 var $author$project$Main$update = F2(
@@ -5251,26 +5262,17 @@ var $author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{
-							chat: A2($author$project$ChatMirror$updateChat, chatChange, model.chat)
+							chat: A2($author$project$ChatMirror$update, chatChange, model.chat)
 						}),
-					A3($author$project$ChatMirror$updateChatCmd, $author$project$Main$sendMessage, chatChange, model.chat));
-			case 'Increment':
+					A3($author$project$ChatMirror$updateCmd, $author$project$Main$sendMessage, chatChange, model.chat));
+			case 'UpdateCounter':
+				var counterMsg = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{counterValue: model.counterValue + 1}),
-					$elm$core$Platform$Cmd$none);
-			case 'Decrement':
-				return (!model.counterValue) ? _Utils_Tuple2(model, $elm$core$Platform$Cmd$none) : _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{counterValue: model.counterValue - 1}),
-					$elm$core$Platform$Cmd$none);
-			case 'Clear':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{counterValue: 0}),
+						{
+							counterValue: A2($author$project$Counter$update, counterMsg, model.counterValue)
+						}),
 					$elm$core$Platform$Cmd$none);
 			default:
 				var formFieldChange = msg.a;
@@ -5278,7 +5280,7 @@ var $author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{
-							registrationForm: A2($author$project$Register$updateForm, formFieldChange, model.registrationForm)
+							registrationForm: A2($author$project$Register$update, formFieldChange, model.registrationForm)
 						}),
 					$elm$core$Platform$Cmd$none);
 		}
@@ -5454,9 +5456,11 @@ var $author$project$ChatMirror$view = function (chat) {
 			]));
 };
 var $author$project$Types$Clear = {$: 'Clear'};
-var $author$project$Types$Decrement = {$: 'Decrement'};
 var $author$project$Types$Increment = {$: 'Increment'};
-var $author$project$Counter$view = function (model) {
+var $author$project$Types$UpdateCounter = function (a) {
+	return {$: 'UpdateCounter', a: a};
+};
+var $author$project$Counter$view = function (counterValue) {
 	return A2(
 		$elm$html$Html$div,
 		_List_Nil,
@@ -5466,7 +5470,8 @@ var $author$project$Counter$view = function (model) {
 				$elm$html$Html$button,
 				_List_fromArray(
 					[
-						$elm$html$Html$Events$onClick($author$project$Types$Decrement)
+						$elm$html$Html$Events$onClick(
+						$author$project$Types$UpdateCounter($author$project$Types$Increment))
 					]),
 				_List_fromArray(
 					[
@@ -5478,12 +5483,13 @@ var $author$project$Counter$view = function (model) {
 				_List_fromArray(
 					[
 						$elm$html$Html$text(
-						$elm$core$String$fromInt(model.counterValue)),
+						$elm$core$String$fromInt(counterValue)),
 						A2(
 						$elm$html$Html$button,
 						_List_fromArray(
 							[
-								$elm$html$Html$Events$onClick($author$project$Types$Clear)
+								$elm$html$Html$Events$onClick(
+								$author$project$Types$UpdateCounter($author$project$Types$Clear))
 							]),
 						_List_fromArray(
 							[
@@ -5494,7 +5500,8 @@ var $author$project$Counter$view = function (model) {
 				$elm$html$Html$button,
 				_List_fromArray(
 					[
-						$elm$html$Html$Events$onClick($author$project$Types$Increment)
+						$elm$html$Html$Events$onClick(
+						$author$project$Types$UpdateCounter($author$project$Types$Increment))
 					]),
 				_List_fromArray(
 					[
@@ -5553,7 +5560,7 @@ var $author$project$Main$viewCurrentPage = function (model) {
 		case 'ChatMirror':
 			return $author$project$ChatMirror$view(model.chat);
 		case 'Counter':
-			return $author$project$Counter$view(model);
+			return $author$project$Counter$view(model.counterValue);
 		default:
 			return $author$project$Register$view(model.registrationForm);
 	}

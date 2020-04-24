@@ -1,9 +1,9 @@
-module Register exposing (init, updateForm, view)
+module Register exposing (init, update, view)
 
 import Html exposing (Html, div, input)
 import Html.Attributes exposing (placeholder, type_, value)
 import Html.Events exposing (onInput)
-import Types exposing (Msg(..), RegistrationForm, RegistrationFormFieldChange(..))
+import Types exposing (Msg(..), RegistrationForm, RegistrationMsg(..))
 
 
 init : RegistrationForm
@@ -11,9 +11,13 @@ init =
     { username = "", password = "", passwordAgain = "" }
 
 
-updateForm : RegistrationFormFieldChange -> RegistrationForm -> RegistrationForm
-updateForm formField form =
-    case formField of
+
+-- UPDATE
+
+
+update : RegistrationMsg -> RegistrationForm -> RegistrationForm
+update registrationMsg form =
+    case registrationMsg of
         Username value ->
             { form | username = value }
 
@@ -22,6 +26,10 @@ updateForm formField form =
 
         PasswordAgain value ->
             { form | passwordAgain = value }
+
+
+
+-- VIEW
 
 
 view : RegistrationForm -> Html Msg
@@ -33,6 +41,6 @@ view form =
         ]
 
 
-viewInput : String -> String -> String -> (String -> RegistrationFormFieldChange) -> Html Msg
+viewInput : String -> String -> String -> (String -> RegistrationMsg) -> Html Msg
 viewInput t p v fieldChange =
     input [ type_ t, placeholder p, value v, onInput (fieldChange >> UpdateRegistrationForm) ] []

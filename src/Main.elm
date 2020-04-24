@@ -6,7 +6,7 @@ import Counter
 import Html exposing (Html, button, div, h1, text)
 import Html.Events exposing (onClick)
 import Register
-import Types exposing (ChatChange(..), Model, Msg(..), Page(..), RegistrationFormFieldChange(..))
+import Types exposing (ChatMsg(..), Model, Msg(..), Page(..), RegistrationMsg(..))
 
 
 
@@ -65,31 +65,17 @@ update msg model =
             )
 
         UpdateChat chatChange ->
-            ( { model | chat = ChatMirror.updateChat chatChange model.chat }
-            , ChatMirror.updateChatCmd sendMessage chatChange model.chat
+            ( { model | chat = ChatMirror.update chatChange model.chat }
+            , ChatMirror.updateCmd sendMessage chatChange model.chat
             )
 
-        Increment ->
-            ( { model | counterValue = model.counterValue + 1 }
-            , Cmd.none
-            )
-
-        Decrement ->
-            if model.counterValue == 0 then
-                ( model, Cmd.none )
-
-            else
-                ( { model | counterValue = model.counterValue - 1 }
-                , Cmd.none
-                )
-
-        Clear ->
-            ( { model | counterValue = 0 }
+        UpdateCounter counterMsg ->
+            ( { model | counterValue = Counter.update counterMsg model.counterValue }
             , Cmd.none
             )
 
         UpdateRegistrationForm formFieldChange ->
-            ( { model | registrationForm = Register.updateForm formFieldChange model.registrationForm }
+            ( { model | registrationForm = Register.update formFieldChange model.registrationForm }
             , Cmd.none
             )
 
@@ -132,7 +118,7 @@ viewCurrentPage model =
             ChatMirror.view model.chat
 
         Counter ->
-            Counter.view model
+            Counter.view model.counterValue
 
         Register ->
             Register.view model.registrationForm
