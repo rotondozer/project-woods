@@ -4,7 +4,7 @@ import Browser
 import Browser.Navigation as Navigation
 import ChatMirror
 import Counter
-import Html exposing (Html, a, div, h1, li, text)
+import Html exposing (Html, a, div, h1, li, text, ul)
 import Html.Attributes exposing (class, href)
 import Register
 import Types exposing (ChatMsg(..), Model, Msg(..), RegistrationMsg(..), Route(..))
@@ -113,7 +113,7 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "Elm Playground"
     , body =
-        [ div [ class "row" ]
+        [ ul [ class "nav navbar-nav" ]
             [ viewLink "chat-mirror"
             , viewLink "counter"
             , viewLink "register"

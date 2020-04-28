@@ -5378,7 +5378,7 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
-var $elm$html$Html$div = _VirtualDom_node('div');
+var $elm$html$Html$ul = _VirtualDom_node('ul');
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
@@ -6169,7 +6169,6 @@ var $author$project$ChatMirror$toMessageWithUser = function (user) {
 		return user + (': ' + message);
 	};
 };
-var $elm$html$Html$ul = _VirtualDom_node('ul');
 var $author$project$ChatMirror$chatMessagesWithUser = function (chat) {
 	return A2(
 		$elm$html$Html$ul,
@@ -6182,6 +6181,7 @@ var $author$project$ChatMirror$chatMessagesWithUser = function (chat) {
 				$author$project$ChatMirror$toMessageWithUser(chat.username),
 				chat.messages)));
 };
+var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$json$Json$Decode$andThen = _Json_andThen;
 var $elm$json$Json$Decode$fail = _Json_fail;
 var $elm$json$Json$Decode$field = _Json_decodeField;
@@ -6463,10 +6463,10 @@ var $author$project$Main$view = function (model) {
 		body: _List_fromArray(
 			[
 				A2(
-				$elm$html$Html$div,
+				$elm$html$Html$ul,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('row')
+						$elm$html$Html$Attributes$class('nav navbar-nav')
 					]),
 				_List_fromArray(
 					[
