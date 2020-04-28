@@ -4,7 +4,7 @@ import Html exposing (Html, button, div, h1, input, li, text, ul)
 import Html.Attributes exposing (placeholder, type_, value)
 import Html.Events exposing (on, onClick, onInput)
 import Json.Decode as D
-import Types exposing (Chat, ChatMsg(..), Msg(..), Page(..))
+import Types exposing (Chat, ChatMsg(..), Msg(..), Route(..))
 
 
 init : Chat

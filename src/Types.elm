@@ -4,13 +4,17 @@ module Types exposing
     , CounterMsg(..)
     , Model
     , Msg(..)
-    , Page(..)
     , RegistrationForm
     , RegistrationMsg(..)
+    , Route(..)
     )
 
+import Browser
+import Browser.Navigation as Navigation
+import Url
 
-type Page
+
+type Route
     = Home
     | ChatMirror
     | Counter
@@ -51,7 +55,8 @@ type CounterMsg
 
 
 type alias Model =
-    { currentPage : Page
+    { url : Url.Url
+    , key : Navigation.Key
     , chat : Chat
     , counterValue : Int
     , registrationForm : RegistrationForm
@@ -59,7 +64,8 @@ type alias Model =
 
 
 type Msg
-    = ChangeView Page
+    = LinkClicked Browser.UrlRequest
+    | UrlChanged Url.Url
     | UpdateChat ChatMsg
     | UpdateCounter CounterMsg
     | UpdateRegistrationForm RegistrationMsg

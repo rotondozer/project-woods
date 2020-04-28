@@ -1,9 +1,9 @@
 module Register exposing (init, update, view)
 
-import Html exposing (Html, button, div, input, text)
+import Html exposing (Html, div, input, text)
 import Html.Attributes exposing (placeholder, style, type_, value)
-import Html.Events exposing (onClick, onInput)
-import Types exposing (Msg(..), Page(..), RegistrationForm, RegistrationMsg(..))
+import Html.Events exposing (onInput)
+import Types exposing (Msg(..), RegistrationForm, RegistrationMsg(..), Route(..))
 
 
 init : RegistrationForm
@@ -39,7 +39,8 @@ view form =
         , viewInput "password" "Password" form.password Password
         , viewInput "password" "Confirm Password" form.passwordAgain PasswordAgain
         , viewValidation form
-        , button [ onClick (ChangeView Home) ] [ text "Create Account" ]
+
+        -- , button [ onClick (ChangeView Home) ] [ text "Create Account" ]
         ]
 
 

@@ -1,12 +1,15 @@
 port module Main exposing (init, main, view)
 
-import Browser exposing (element)
+import Browser
+import Browser.Navigation as Navigation
 import ChatMirror
 import Counter
-import Html exposing (Html, button, div, h1, text)
-import Html.Events exposing (onClick)
+import Html exposing (Html, a, div, h1, li, text)
+import Html.Attributes exposing (class, href)
 import Register
-import Types exposing (ChatMsg(..), Model, Msg(..), Page(..), RegistrationMsg(..))
+import Types exposing (ChatMsg(..), Model, Msg(..), RegistrationMsg(..), Route(..))
+import Url
+import Url.Parser as Parser
 
 
 
@@ -25,11 +28,13 @@ port messageReceiver : (String -> msg) -> Sub msg
 
 main : Program () Model Msg
 main =
-    Browser.element
+    Browser.application
         { init = init
-        , subscriptions = subscriptions
         , view = view
         , update = update
+        , subscriptions = subscriptions
+        , onUrlChange = UrlChanged
+        , onUrlRequest = LinkClicked
         }
 
 
@@ -37,9 +42,10 @@ main =
 -- MODEL
 
 
-init : () -> ( Model, Cmd Msg )
-init _ =
-    ( { currentPage = Home
+init : () -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
+init _ url key =
+    ( { url = url
+      , key = key
       , chat = ChatMirror.init
       , counterValue = 0
       , registrationForm = Register.init
@@ -51,7 +57,7 @@ init _ =
 
 -- UPDATE
 -- Use the `sendMessage` port when someone presses ENTER or clicks
--- the "Send" button. Check out index.html to see the corresponding
+-- the "Send" button. Check out index.Browser.Document to see the corresponding
 -- JS where this is piped into a WebSocket.
 --
 
@@ -59,10 +65,16 @@ init _ =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        ChangeView newView ->
-            ( { model | currentPage = newView }
-            , Cmd.none
-            )
+        LinkClicked urlRequest ->
+            case urlRequest of
+                Browser.Internal url ->
+                    ( model, Navigation.pushUrl model.key (Url.toString url) )
+
+                Browser.External href ->
+                    ( model, Navigation.load href )
+
+        UrlChanged url ->
+            ( { model | url = url }, Cmd.none )
 
         UpdateChat chatChange ->
             ( { model | chat = ChatMirror.update chatChange model.chat }
@@ -97,20 +109,23 @@ subscriptions _ =
 -- VIEW
 
 
-view : Model -> Html Msg
+view : Model -> Browser.Document Msg
 view model =
-    div []
-        [ button [ onClick (ChangeView Home) ] [ text "Home" ]
-        , button [ onClick (ChangeView ChatMirror) ] [ text "Chat Mirror" ]
-        , button [ onClick (ChangeView Counter) ] [ text "Counter" ]
-        , button [ onClick (ChangeView Register) ] [ text "Register" ]
+    { title = "Elm Playground"
+    , body =
+        [ div [ class "row" ]
+            [ viewLink "chat-mirror"
+            , viewLink "counter"
+            , viewLink "register"
+            ]
         , viewCurrentPage model
         ]
+    }
 
 
 viewCurrentPage : Model -> Html Msg
 viewCurrentPage model =
-    case model.currentPage of
+    case toRoute model.url of
         Home ->
             h1 [] [ text "Elm Guide Projects Home" ]
 
@@ -122,3 +137,23 @@ viewCurrentPage model =
 
         Register ->
             Register.view model.registrationForm
+
+
+viewLink : String -> Html msg
+viewLink path =
+    li [] [ a [ href ("/" ++ path) ] [ text path ] ]
+
+
+routeParser : Parser.Parser (Route -> a) a
+routeParser =
+    Parser.oneOf
+        [ Parser.map Home Parser.top
+        , Parser.map ChatMirror (Parser.s "chat-mirror")
+        , Parser.map Counter (Parser.s "counter")
+        , Parser.map Register (Parser.s "register")
+        ]
+
+
+toRoute : Url.Url -> Route
+toRoute url =
+    Maybe.withDefault Home (Parser.parse routeParser url)
