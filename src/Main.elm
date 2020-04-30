@@ -4,8 +4,9 @@ import Browser
 import Browser.Navigation as Navigation
 import ChatMirror
 import Counter
-import Html exposing (Html, a, div, h1, li, text, ul)
+import Html exposing (Html, a, button, div, h1, li, text, ul)
 import Html.Attributes exposing (class, href)
+import Html.Events exposing (onClick)
 import Register
 import Types exposing (ChatMsg(..), Model, Msg(..), RegistrationMsg(..), Route(..))
 import Url
@@ -91,6 +92,9 @@ update msg model =
             , Cmd.none
             )
 
+        GetStuff ->
+            ( model, Cmd.none )
+
 
 
 -- SUBSCRIPTIONS
@@ -113,12 +117,15 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "Elm Playground"
     , body =
-        [ ul [ class "nav navbar-nav" ]
-            [ viewLink "chat-mirror"
-            , viewLink "counter"
-            , viewLink "register"
+        [ div [ class "container" ]
+            [ ul [ class "nav navbar-nav" ]
+                [ viewLink "chat-mirror"
+                , viewLink "counter"
+                , viewLink "register"
+                , viewLink "public-APIs"
+                ]
+            , viewCurrentPage model
             ]
-        , viewCurrentPage model
         ]
     }
 
@@ -138,6 +145,12 @@ viewCurrentPage model =
         Register ->
             Register.view model.registrationForm
 
+        PublicAPIs ->
+            div [ class "container" ]
+                [ text "Push this button to do a thing "
+                , button [ class "btn btn-large btn-primary", onClick GetStuff ] [ text "Get Stuff" ]
+                ]
+
 
 viewLink : String -> Html msg
 viewLink path =
@@ -151,6 +164,7 @@ routeParser =
         , Parser.map ChatMirror (Parser.s "chat-mirror")
         , Parser.map Counter (Parser.s "counter")
         , Parser.map Register (Parser.s "register")
+        , Parser.map PublicAPIs (Parser.s "public-APIs")
         ]
 
 

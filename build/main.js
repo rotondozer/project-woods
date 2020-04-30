@@ -5359,7 +5359,7 @@ var $author$project$Main$update = F2(
 							counterValue: A2($author$project$Counter$update, counterMsg, model.counterValue)
 						}),
 					$elm$core$Platform$Cmd$none);
-			default:
+			case 'UpdateRegistrationForm':
 				var formFieldChange = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -5368,6 +5368,8 @@ var $author$project$Main$update = F2(
 							registrationForm: A2($author$project$Register$update, formFieldChange, model.registrationForm)
 						}),
 					$elm$core$Platform$Cmd$none);
+			default:
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
 	});
 var $elm$html$Html$Attributes$stringProperty = F2(
@@ -5378,8 +5380,28 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
+var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$ul = _VirtualDom_node('ul');
+var $author$project$Types$GetStuff = {$: 'GetStuff'};
+var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $author$project$Types$Home = {$: 'Home'};
@@ -6019,6 +6041,7 @@ var $elm$url$Url$Parser$parse = F2(
 	});
 var $author$project$Types$ChatMirror = {$: 'ChatMirror'};
 var $author$project$Types$Counter = {$: 'Counter'};
+var $author$project$Types$PublicAPIs = {$: 'PublicAPIs'};
 var $author$project$Types$Register = {$: 'Register'};
 var $elm$url$Url$Parser$Parser = function (a) {
 	return {$: 'Parser', a: a};
@@ -6129,7 +6152,11 @@ var $author$project$Main$routeParser = $elm$url$Url$Parser$oneOf(
 			A2(
 			$elm$url$Url$Parser$map,
 			$author$project$Types$Register,
-			$elm$url$Url$Parser$s('register'))
+			$elm$url$Url$Parser$s('register')),
+			A2(
+			$elm$url$Url$Parser$map,
+			$author$project$Types$PublicAPIs,
+			$elm$url$Url$Parser$s('public-APIs'))
 		]));
 var $elm$core$Maybe$withDefault = F2(
 	function (_default, maybe) {
@@ -6153,7 +6180,6 @@ var $author$project$Types$Send = {$: 'Send'};
 var $author$project$Types$User = function (a) {
 	return {$: 'User', a: a};
 };
-var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$html$Html$li = _VirtualDom_node('li');
 var $author$project$ChatMirror$toChatMessage = function (message) {
 	return A2(
@@ -6181,7 +6207,6 @@ var $author$project$ChatMirror$chatMessagesWithUser = function (chat) {
 				$author$project$ChatMirror$toMessageWithUser(chat.username),
 				chat.messages)));
 };
-var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$json$Json$Decode$andThen = _Json_andThen;
 var $elm$json$Json$Decode$fail = _Json_fail;
 var $elm$json$Json$Decode$field = _Json_decodeField;
@@ -6194,23 +6219,6 @@ var $author$project$ChatMirror$ifIsEnter = function (msg) {
 		A2($elm$json$Json$Decode$field, 'key', $elm$json$Json$Decode$string));
 };
 var $elm$html$Html$input = _VirtualDom_node('input');
-var $elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 'Normal', a: a};
-};
-var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
-var $elm$html$Html$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			$elm$virtual_dom$VirtualDom$on,
-			event,
-			$elm$virtual_dom$VirtualDom$Normal(decoder));
-	});
-var $elm$html$Html$Events$onClick = function (msg) {
-	return A2(
-		$elm$html$Html$Events$on,
-		'click',
-		$elm$json$Json$Decode$succeed(msg));
-};
 var $elm$html$Html$Events$alwaysStop = function (x) {
 	return _Utils_Tuple2(x, true);
 };
@@ -6429,8 +6437,30 @@ var $author$project$Main$viewCurrentPage = function (model) {
 			return $author$project$ChatMirror$view(model.chat);
 		case 'Counter':
 			return $author$project$Counter$view(model.counterValue);
-		default:
+		case 'Register':
 			return $author$project$Register$view(model.registrationForm);
+		default:
+			return A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('container')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Push this button to do a thing '),
+						A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('btn btn-large btn-primary'),
+								$elm$html$Html$Events$onClick($author$project$Types$GetStuff)
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Get Stuff')
+							]))
+					]));
 	}
 };
 var $elm$html$Html$a = _VirtualDom_node('a');
@@ -6463,18 +6493,28 @@ var $author$project$Main$view = function (model) {
 		body: _List_fromArray(
 			[
 				A2(
-				$elm$html$Html$ul,
+				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('nav navbar-nav')
+						$elm$html$Html$Attributes$class('container')
 					]),
 				_List_fromArray(
 					[
-						$author$project$Main$viewLink('chat-mirror'),
-						$author$project$Main$viewLink('counter'),
-						$author$project$Main$viewLink('register')
-					])),
-				$author$project$Main$viewCurrentPage(model)
+						A2(
+						$elm$html$Html$ul,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('nav navbar-nav')
+							]),
+						_List_fromArray(
+							[
+								$author$project$Main$viewLink('chat-mirror'),
+								$author$project$Main$viewLink('counter'),
+								$author$project$Main$viewLink('register'),
+								$author$project$Main$viewLink('public-APIs')
+							])),
+						$author$project$Main$viewCurrentPage(model)
+					]))
 			]),
 		title: 'Elm Playground'
 	};

@@ -19,6 +19,7 @@ type Route
     | ChatMirror
     | Counter
     | Register
+    | PublicAPIs
 
 
 type alias RegistrationForm =
@@ -69,3 +70,4 @@ type Msg
     | UpdateChat ChatMsg
     | UpdateCounter CounterMsg
     | UpdateRegistrationForm RegistrationMsg
+    | GetStuff
